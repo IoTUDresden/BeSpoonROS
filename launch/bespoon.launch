@@ -1,0 +1,6 @@
+<launch>
+    <!-- set the jar file name,   -->
+    <env name="BESPOON_PROP_FILE" value="$(find bespoon)/bespoon.properties" />
+    <env name="FILE_NAME" value="$(find bespoon)/bespoon.jar" />
+    <node name="bespoon" pkg="bespoon" type="bespoon_pub.py" />
+</launch>
