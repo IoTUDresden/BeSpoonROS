@@ -3,7 +3,7 @@ import math
 import numpy
 
 """
-Trilateration in XY plane
+Trilateration in XY plane, Z=0
 
 https://en.wikipedia.org/wiki/Trilateration
 """
@@ -31,12 +31,12 @@ def trilateration(points):
     x = (pow(d1,2) - pow(d2,2) + pow(d,2))/(2*d)
     y = ((pow(d1,2) - pow(d3,2) + pow(i,2) + pow(j,2))/(2*j)) - ((i/j)*x)        
     z = 0 # numpy.sqrt(pow(d1,2) - pow(x,2) - pow(y,2))    
+    # convert to original coordinate system
     P12 = P1 + x*ex + y*ey + z*ez
-    #print ex, ey, ez, i, j, d, P12
-    print d
-    print 'P12:', list(P12)
-    return (x,y,z)
-
+    # print ex, ey, ez, i, j, d, P12    
+    # print (x,y,z)    
+    return P12
+    
 
 def filter():
     pass     
@@ -48,9 +48,10 @@ if __name__ == '__main__':
     [4.25212874019 , 0.468160024585, 0, 4.277823], 
     [0.391068983923, 2.99875148891, 0, 3.024144] ]
 
-    data = [ [-0.210776084205, 0.0606242891579, 0, 0.219321], 
-    [4.25212874019 , 0.468160024585, 0, 4.277823], 
-    [0.391068983923, 2.99875148891, 0, 3.024144] ]
+    #tags: [1107, 3383, 2024], distance: [538, 438, 54], anchor_position: "{18; 121}" 
+    data = [ [20, 80, 0, 54], 
+    [450 , 45, 0, 438], 
+    [300, 580, 0, 538] ]
 
     # print(data)
     val = trilateration(data)    
