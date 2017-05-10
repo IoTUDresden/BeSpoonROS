@@ -53,8 +53,11 @@ if __name__ == '__main__':
     [450 , 45, 0, 438], 
     [300, 580, 0, 538] ]
 
+    # 1m = 100cm 
+    temp = [ [y/100.0 for y in x] for x in data]
+
     # print(data)
-    val = trilateration(data)    
+    val = trilateration(temp)    
     print(val)
     
 
