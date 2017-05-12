@@ -40,8 +40,8 @@ def transform(point, angle_in_degree=None, point_origin_in_R=None):
     
     Rx = (point[0] - base[0]) * math.cos(angle)  + (point[1] - base[1]) * math.sin(angle)
     Ry =  -1 * (point[0] - base[0]) * math.sin(angle)  + (point[1] - base[1]) * math.cos(angle)
-
-    return set([Rx, Ry])
+    
+    return [Rx, Ry]
 
 def get_angle(Bpoint, Rcenter=None):
     """
@@ -69,13 +69,15 @@ if __name__ == '__main__':
     # p = [20,80]
     # b = [0.391069, 2.99875]
     # c = [ x/100.0  for x in p]    
-
+    
     # B's center in R's plane     
-    b = [-0.191069, 3.79875]
-    angle = 270.0
+    b = [-0.191069, 3.79875]    
+    angle = 0.0
+    b = [-0.41,3.19875]
+    
     
     # 1m = 100cm, use same metric for both coordinates
     pp = [ [ y/100.0 for y in x] for x in p]
     for x in pp: print x, transform(x, angle, b)  
-    # print transform(c,270.0, b)
+    # print transform(c, angle, b)
     pass
