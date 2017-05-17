@@ -13,14 +13,13 @@ import subprocess
 import os
 
 default_file = "bespoon.jar"
-anchor_position=""
 
 def bespoon():
     pub = rospy.Publisher('bespoon', String)
     # queue_size not supported in groovy 
     #pub = rospy.Publisher('bespoon', String, queue_size=10)    
     rospy.init_node('bespoon_server', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
+    rate = rospy.Rate(0.1) # 10hz/100
     cmd = ['java', '-jar']
 
     # add java class path and jar file 
@@ -38,30 +37,12 @@ def bespoon():
     while proc.poll() is None: 
         output = proc.stdout.readline()
         #print(output.strip())
-        data = "{ %s }" % output.strip('\n')
+        data = % output.strip('\n')
         rospy.loginfo(data)
         pub.publish(data)
         rate.sleep()
     retcode = proc.poll()
     print("Return code: ", retcode);
-
-"""
-ToDO 
-"""
-def bespoon_anchor_position():
-    pub = rospy.Publisher('bespoon_anchor_position', String)
-    rospy.init_node('bespoon_server_2', anonymous=True)
-    rate = rospy.Rate(1) # 10hz
-
-    # parse anchor location part, and publish     
-    print("Process id: ", proc.pid)
-    while proc.poll() is None: 
-        output = anchor_position   
-        data = "{ %s }" % output.strip('\n')
-        rospy.loginfo(data)
-        pub.publish(data)
-        rate.sleep()
-    # ToDO 
        
 
 if __name__ == "__main__":    
