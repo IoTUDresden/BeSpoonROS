@@ -16,7 +16,7 @@ def publish():
 
 if __name__ == '__main__':
     try:
-        #publish()
+        # publish()
         bespoon_java_server.bespoon()
     except Exception as e:
         print("Error:" , e)

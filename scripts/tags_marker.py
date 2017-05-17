@@ -83,10 +83,9 @@ class BespoonMarker(object):
         p.z = z 
         return p 
 
-
-    def publish_tags(self, tags_coordinates):    
-        if not isinstance(tags_coordinates, dict): raise Exception('Invalid parameters, expected: { id : [x,y,z]}')
-
+    def prepare_tags_marker_array(self, tags_coordinates):
+        if not isinstance(tags_coordinates, dict): 
+            raise Exception('Invalid parameters, expected: { id : [x,y,z]}')
         # Create marker, set tag values and add in Array 
         markers = MarkerArray()    
         point_marker = self.create_marker()
@@ -97,7 +96,24 @@ class BespoonMarker(object):
             label_marker = self.set_tag_label(self.create_marker(), int(tid), pos, "Tag " + str(tid))
             markers.markers.append(label_marker)
             # add coordinate to point marker 
-            point_marker.points.append(self.get_point(pos))        
+            point_marker.points.append(self.get_point(pos))
+        return markers        
+    
+    def prepare_anchor_marker_array(self, pos=None):
+        if not isinstance(pos,list) and len(pos) != 3: 
+            raise Exception('Invalid parameters, expected: [x,y,z]')
+
+        markers = MarkerArray()    
+        anchor_marker = self.create_marker()
+        anchor_marker.color.g = 1.0
+        anchor_marker.color.r = 0.0
+        # anchor_marker.points = list()
+        anchor_marker.points.append(self.get_point(pos))
+        markers.markers.append(anchor_marker)
+        return markers
+
+    def publish_tags(self, tags_coordinates):    
+        markers = prepare_tags_marker_array(tags_coordinates)     
         
         while not rospy.is_shutdown():
             # rospy.loginfo(msg)
@@ -105,15 +121,9 @@ class BespoonMarker(object):
             self.rate.sleep()
 
     def publish_anchor(self, pos=None):
-        if not isinstance(pos,list) and len(pos) != 3: 
-            raise Exception('Invalid parameters, expected: [x,y,z]')
+        markers = prepare_anchor_marker_array(pos)
 
-        markers = MarkerArray()    
-        anchor_marker = self.create_marker()
         while not rospy.is_shutdown():             
-            anchor_marker.points = list()
-            anchor_marker.points.append(self.get_point(pos))
-            markers.markers.append(anchor_marker)
             self.topic.publish(markers)
             self.rate.sleep()
 
@@ -125,6 +135,7 @@ if __name__ == '__main__':
         "1107" : [5, 0, 0], 
         "2024" : [0, 3, 0], 
     }
+    anchor_coord = [1,3,0]
     
     bm = BespoonMarker()
     bm.publish_tags(tags_coord)
