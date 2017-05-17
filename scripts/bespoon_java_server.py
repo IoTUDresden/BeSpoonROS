@@ -37,7 +37,7 @@ def bespoon():
     while proc.poll() is None: 
         output = proc.stdout.readline()
         #print(output.strip())
-        data = % output.strip('\n')
+        data = output.strip('\n')
         rospy.loginfo(data)
         pub.publish(data)
         rate.sleep()
