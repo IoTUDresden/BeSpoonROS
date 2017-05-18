@@ -13,11 +13,17 @@ Bespoon Tags and Anchor Marker
 
 class BespoonMarker(object):
     def __init__(self):
-        # Create ros publisher 
-        rospy.init_node('tags_marker')
-        self.topic = rospy.Publisher('visualization_marker_array', MarkerArray, queue_size=10)
+        self.node_name='tags_marker'
+        pass         
+        
+    def ros_node_init(self, name=None):
+        if name is None: 
+            raise Exception('topic and name could not be empty')
+        #  topic = visualization_marker_array, MarkerArray        
+        rospy.init_node(name)        
+        self.node_name=name
         self.rate = rospy.Rate(0.1)
-            
+        
     def create_marker(self):
         marker = Marker()
         marker.header.frame_id = "/map"
@@ -25,7 +31,7 @@ class BespoonMarker(object):
         marker.lifetime = rospy.Duration()
         # Set the namespace and id for this marker.  This serves to create a unique ID
         # Any marker sent with the same namespace and id will overwrite the old one
-        marker.ns = "tags_marker"
+        marker.ns = self.node_name  # tags_marker
         marker.id = 0
         marker.type = Marker.POINTS
         marker.action = Marker.ADD
@@ -108,24 +114,28 @@ class BespoonMarker(object):
         anchor_marker.color.g = 1.0
         anchor_marker.color.r = 0.0
         # anchor_marker.points = list()
-        anchor_marker.points.append(self.get_point(pos))
-        markers.markers.append(anchor_marker)
+        anchor_marker.points.append(self.get_point(pos))        
+        markers.markers.append(anchor_marker)        
         return markers
 
     def publish_tags(self, tags_coordinates):    
-        markers = prepare_tags_marker_array(tags_coordinates)     
+        self.topic = rospy.Publisher('visualization_marker_array', MarkerArray, queue_size=10)
+        markers = self.prepare_tags_marker_array(tags_coordinates)     
         
         while not rospy.is_shutdown():
             # rospy.loginfo(msg)
             self.topic.publish(markers)
             self.rate.sleep()
 
-    def publish_anchor(self, pos=None):
-        markers = prepare_anchor_marker_array(pos)
-
+    def publish_anchor(self, pos=None):           
+        topic = rospy.Publisher('visualization_marker_array', Marker, queue_size=10)
+        markers = self.prepare_anchor_marker_array(pos)
+        
         while not rospy.is_shutdown():             
-            self.topic.publish(markers)
-            self.rate.sleep()
+            topic.publish(marker)
+            # rospy.loginfo(str(marker))
+            rate.sleep()
+        
 
 if __name__ == '__main__':
     print 'Starting tags marker publisher'
@@ -138,5 +148,6 @@ if __name__ == '__main__':
     anchor_coord = [1,3,0]
     
     bm = BespoonMarker()
+    bm.ros_node_init('tags_marker')
     bm.publish_tags(tags_coord)
     # bm.publish_anchor([2, 2, 0])
