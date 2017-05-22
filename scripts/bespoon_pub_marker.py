@@ -20,16 +20,21 @@ class Bespoon(object):
     Format the bespoon topic data for marker visualization 
     """    
     def format_data_for_marker(self, data):        
-        marker_data = dict()
-        # convert json string to ros data 
-        ros_data = RosData(data)                
-        for tag in ros_data.tags: 
-            # convert tag dict to rosdata             
-            t = RosData(json.dumps(tag))
-            marker_data[str(t.tagId)] = [t.x, t.y, t.z]
-        marker_data['anchor'] = ros_data.anchor
+        local_marker_data = dict()
+        try: 
+            # convert json string to ros data 
+            ros_data = RosData(data)                
+            for tag in ros_data.tags: 
+                # convert tag dict to rosdata             
+                t = RosData(json.dumps(tag))
+                local_marker_data[str(t.tagId)] = [t.x, t.y, t.z]
+            local_marker_data['anchor'] = ros_data.anchor
+        except Exception as e:
+            print "Error: json data parsing error\n", e
+            
+
         # print marker_data
-        return marker_data
+        return local_marker_data
                 
     def callback(self, msg):
         """
@@ -65,9 +70,9 @@ if __name__ == '__main__':
         # b.subscribe()
         # b.publish()        
         data = '{ "tags" : [{"tagId":3383,"x":2,"y":3,"z":0,"anchorDistance":0}, {"tagId":3384,"x":3,"y":2,"z":0,"anchorDistance":0}], "anchor": [1,1]}'
-        # data = '{ "tags" : [], "anchor": [2,3]}'
+        # data = '{ "tags" : [], "anchor": [2,3]}'        
         b.marker_data= b.format_data_for_marker(data)         
-        b.publish()
+        b.publish()        
     except Exception as e:
         print("Error:" , e)
 
