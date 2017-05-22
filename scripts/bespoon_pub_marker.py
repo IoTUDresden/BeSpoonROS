@@ -44,7 +44,7 @@ class Bespoon(object):
         rospy.Subscriber('bespoon', String, self.callback)
 
     def publish(self):
-        self.topic = rospy.Publisher('bespoon2', MarkerArray, queue_size=10)
+        self.topic = rospy.Publisher('visualization_marker_array', MarkerArray, queue_size=10)
         bpm = BespoonMarker()
         
         while not rospy.is_shutdown():            
@@ -55,7 +55,7 @@ class Bespoon(object):
                 self.topic.publish(bpm.prepare_anchor_marker_array(anchor))
                                             
             tags = bpm.prepare_tags_marker_array(local_marker_data)                        
-            if  tags is not None and len(tags.markers) > 1:           # first data is zero point marker 
+            if  tags is not None:           # first data is zero point marker                 
                 self.topic.publish(tags)
             self.rate.sleep()            
 
@@ -64,10 +64,9 @@ if __name__ == '__main__':
         b = Bespoon()
         # b.subscribe()
         # b.publish()        
-        data = '{ "tags" : [{"tagId":3383,"x":20,"y":30,"z":0,"anchorDistance":0}, {"tagId":3384,"x":20,"y":30,"z":0,"anchorDistance":0}], "anchor": [2,3]}'
+        data = '{ "tags" : [{"tagId":3383,"x":2,"y":3,"z":0,"anchorDistance":0}, {"tagId":3384,"x":3,"y":2,"z":0,"anchorDistance":0}], "anchor": [1,1]}'
         # data = '{ "tags" : [], "anchor": [2,3]}'
-        b.marker_data= b.format_data_for_marker(data) 
-        b.format_data_for_marker(data)
+        b.marker_data= b.format_data_for_marker(data)         
         b.publish()
     except Exception as e:
         print("Error:" , e)

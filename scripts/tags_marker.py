@@ -95,14 +95,18 @@ class BespoonMarker(object):
         # Create marker, set tag values and add in Array 
         markers = MarkerArray()    
         point_marker = self.create_marker()
-        # add point marker 
-        markers.markers.append(point_marker)
+        point_marker.id = 2
+        
         for tid, pos in  tags_coordinates.iteritems():
             # add text label marker 
             label_marker = self.set_tag_label(self.create_marker(), int(tid), pos, "Tag " + str(tid))
             markers.markers.append(label_marker)
             # add coordinate to point marker 
             point_marker.points.append(self.get_point(pos))
+
+        # add point marker if tags label exists         
+        if len(point_marker.points) > 0: 
+            markers.markers.append(point_marker)
         return markers        
     
     def prepare_anchor_marker_array(self, pos=None):
@@ -111,6 +115,8 @@ class BespoonMarker(object):
 
         markers = MarkerArray()    
         anchor_marker = self.create_marker()
+        # use different id for each marker, otherwise it will overwrite by other 
+        anchor_marker.id = 1
         anchor_marker.color.g = 1.0
         anchor_marker.color.r = 0.0
         # anchor_marker.points = list()
