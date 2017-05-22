@@ -22,7 +22,7 @@ class BespoonMarker(object):
         #  topic = visualization_marker_array, MarkerArray        
         rospy.init_node(name)        
         self.node_name=name
-        self.rate = rospy.Rate(0.1)
+        self.rate = rospy.Rate(1)       # 1Hz = 1 per second 
         
     def create_marker(self):
         marker = Marker()

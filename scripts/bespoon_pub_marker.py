@@ -12,7 +12,7 @@ from tags_marker import BespoonMarker
 class Bespoon(object):
     def __init__(self):
         rospy.init_node('bespoon_marker')
-        self.rate = rospy.Rate(0.1)     # to do: update the rate 
+        self.rate = rospy.Rate(30)    
         self.bespoon_data=dict() 
         self.marker_data=dict() 
 
@@ -20,7 +20,7 @@ class Bespoon(object):
     Format the bespoon topic data for marker visualization 
     """    
     def format_data_for_marker(self, data):        
-        local_marker_data = dict()
+        local_marker_data = dict()        
         try: 
             # convert json string to ros data 
             ros_data = RosData(data)                
@@ -45,7 +45,7 @@ class Bespoon(object):
         # ToDo: process data here 
         
     def subscribe(self):
-        # subscribe and publish again the subscribed data 
+        # subscribe and publish again the processed data 
         rospy.Subscriber('bespoon', String, self.callback)
 
     def publish(self):
@@ -60,18 +60,17 @@ class Bespoon(object):
                 self.topic.publish(bpm.prepare_anchor_marker_array(anchor))
                                             
             tags = bpm.prepare_tags_marker_array(local_marker_data)                        
-            if  tags is not None:           # first data is zero point marker                 
+            if  tags is not None:           
                 self.topic.publish(tags)
             self.rate.sleep()            
 
 if __name__ == '__main__':
+    data = '{ "tags" : [{"tagId":3383,"x":2,"y":3,"z":0,"anchorDistance":0}, {"tagId":3384,"x":3,"y":2,"z":0,"anchorDistance":0}], "anchor": [1,1]}'
+    # data = '{ "tags" : [], "anchor": [2,3]}'        
     try:
-        b = Bespoon()
-        # b.subscribe()
-        # b.publish()        
-        data = '{ "tags" : [{"tagId":3383,"x":2,"y":3,"z":0,"anchorDistance":0}, {"tagId":3384,"x":3,"y":2,"z":0,"anchorDistance":0}], "anchor": [1,1]}'
-        # data = '{ "tags" : [], "anchor": [2,3]}'        
-        b.marker_data= b.format_data_for_marker(data)         
+        b = Bespoon()        
+        # b.marker_data= b.format_data_for_marker(data)         
+        b.subscribe()
         b.publish()        
     except Exception as e:
         print("Error:" , e)
