@@ -16,6 +16,7 @@ class Bespoon(object):
         self.rate = rospy.Rate(30)    
         self.bespoon_data=dict() 
         self.marker_data=dict() 
+        # 100cm = 1 m, ros axis in meter but besoon axis in cm 
         self.ros_axis_factor=100.0
 
     """
@@ -31,7 +32,7 @@ class Bespoon(object):
                 t = RosData(json.dumps(tag))
                 local_marker_data[str(t.tagId)] = [ t.x/self.ros_axis_factor, t.y/self.ros_axis_factor, t.z/self.ros_axis_factor ]
             # anchor position list 
-            local_marker_data['anchor'] =  [ ros_data.anchorX, ros_data.anchorY ]
+            local_marker_data['anchor'] =  [ ros_data.anchorX / self.ros_axis_factor, ros_data.anchorY / self.ros_axis_factor ]
         except Exception as e:
             print "Error: json data parsing error\n", e            
         # print marker_data
