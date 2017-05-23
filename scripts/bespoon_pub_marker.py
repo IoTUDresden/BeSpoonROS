@@ -13,7 +13,7 @@ from tags_marker import BespoonMarker
 class Bespoon(object):
     def __init__(self):
         rospy.init_node('bespoon_marker')
-        self.rate = rospy.Rate(30)    
+        self.rate = rospy.Rate(10)    
         self.bespoon_data=dict() 
         self.marker_data=dict() 
         # 100cm = 1 m, ros axis in meter but besoon axis in cm 
@@ -52,7 +52,7 @@ class Bespoon(object):
         rospy.Subscriber('bespoon', String, self.callback)
 
     def publish(self):
-        self.topic = rospy.Publisher('visualization_marker_array', MarkerArray, queue_size=10)
+        self.topic = rospy.Publisher('visualization_marker_array', MarkerArray)
         bpm = BespoonMarker()
         print "Bespoon marker publishing..."
         
