@@ -19,7 +19,7 @@ def bespoon():
     # queue_size not supported in groovy 
     #pub = rospy.Publisher('bespoon', String, queue_size=10)    
     rospy.init_node('bespoon_server', anonymous=True)
-    rate = rospy.Rate(0.1) # 10hz/100
+    rate = rospy.Rate(30) # 0.1 = 10hz/100
     cmd = ['java', '-jar']
 
     # add java class path and jar file 

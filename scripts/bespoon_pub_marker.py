@@ -3,6 +3,7 @@
 import rospy
 import json 
 import copy 
+import traceback
 from std_msgs.msg import String 
 from visualization_msgs.msg import MarkerArray
 
@@ -15,6 +16,7 @@ class Bespoon(object):
         self.rate = rospy.Rate(30)    
         self.bespoon_data=dict() 
         self.marker_data=dict() 
+        self.ros_axis_factor=100.0
 
     """
     Format the bespoon topic data for marker visualization 
@@ -27,12 +29,11 @@ class Bespoon(object):
             for tag in ros_data.tags: 
                 # convert tag dict to rosdata             
                 t = RosData(json.dumps(tag))
-                local_marker_data[str(t.tagId)] = [t.x, t.y, t.z]
-            local_marker_data['anchor'] = ros_data.anchor
+                local_marker_data[str(t.tagId)] = [ t.x/self.ros_axis_factor, t.y/self.ros_axis_factor, t.z/self.ros_axis_factor ]
+            # anchor position list 
+            local_marker_data['anchor'] =  [ ros_data.anchorX, ros_data.anchorY ]
         except Exception as e:
-            print "Error: json data parsing error\n", e
-            
-
+            print "Error: json data parsing error\n", e            
         # print marker_data
         return local_marker_data
                 
@@ -41,7 +42,8 @@ class Bespoon(object):
         Subscriber data processing callback method 
         """
         self.bespoon_data = msg.data 
-        self.marker_data= self.format_data_for_marker(msg.data) 
+        # rospy.loginfo(msg)
+        self.marker_data= self.format_data_for_marker(msg.data)         
         # ToDo: process data here 
         
     def subscribe(self):
@@ -51,27 +53,30 @@ class Bespoon(object):
     def publish(self):
         self.topic = rospy.Publisher('visualization_marker_array', MarkerArray, queue_size=10)
         bpm = BespoonMarker()
+        print "Bespoon marker publishing..."
         
-        while not rospy.is_shutdown():            
-            local_marker_data = copy.deepcopy(self.marker_data) 
-            if isinstance(local_marker_data, dict) and local_marker_data.has_key('anchor'):                 
-                anchor = local_marker_data.pop('anchor')                
-                anchor if len(anchor) == 3 else anchor.append(0)
-                self.topic.publish(bpm.prepare_anchor_marker_array(anchor))
-                                            
-            tags = bpm.prepare_tags_marker_array(local_marker_data)                        
-            if  tags is not None:           
-                self.topic.publish(tags)
+        while not rospy.is_shutdown():                        
+            local_marker_data = copy.deepcopy(self.marker_data)             
+            if isinstance(local_marker_data, dict): 
+                if local_marker_data.has_key('anchor'):  
+                    anchor = local_marker_data.pop('anchor')                
+                    anchor if len(anchor) == 3 else anchor.append(0)
+                    self.topic.publish(bpm.prepare_anchor_marker_array(anchor))            
+                
+                tags = bpm.prepare_tags_marker_array(local_marker_data)                        
+                if  tags is not None:           
+                    self.topic.publish(tags)
             self.rate.sleep()            
 
 if __name__ == '__main__':
-    data = '{ "tags" : [{"tagId":3383,"x":2,"y":3,"z":0,"anchorDistance":0}, {"tagId":3384,"x":3,"y":2,"z":0,"anchorDistance":0}], "anchor": [1,1]}'
-    # data = '{ "tags" : [], "anchor": [2,3]}'        
+    data = '{ "tags" : [{"tagId":3383,"x":2,"y":3,"z":0,"anchorDistance":0}, {"tagId":3384,"x":3,"y":2,"z":0,"anchorDistance":0}], "anchor": "{1; 1}","anchorX":1,"anchorY":1 }'
+    # data = '{ "tags" : [], "anchor": "{20,30}","anchorX":20,"anchorY":30}'        
     try:
         b = Bespoon()        
-        # b.marker_data= b.format_data_for_marker(data)         
+        b.marker_data= b.format_data_for_marker(data)                 
         b.subscribe()
-        b.publish()        
+        b.publish()                
     except Exception as e:
         print("Error:" , e)
+        print traceback.print_exc()
 
