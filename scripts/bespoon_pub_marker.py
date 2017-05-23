@@ -69,12 +69,9 @@ class Bespoon(object):
                     self.topic.publish(tags)
             self.rate.sleep()            
 
-if __name__ == '__main__':
-    data = '{ "tags" : [{"tagId":3383,"x":2,"y":3,"z":0,"anchorDistance":0}, {"tagId":3384,"x":3,"y":2,"z":0,"anchorDistance":0}], "anchor": "{1; 1}","anchorX":1,"anchorY":1 }'
-    # data = '{ "tags" : [], "anchor": "{20,30}","anchorX":20,"anchorY":30}'        
+if __name__ == '__main__':    
     try:
-        b = Bespoon()        
-        b.marker_data= b.format_data_for_marker(data)                 
+        b = Bespoon()                             
         b.subscribe()
         b.publish()                
     except Exception as e:
