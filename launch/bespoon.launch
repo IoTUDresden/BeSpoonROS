@@ -3,4 +3,5 @@
     <env name="BESPOON_PROP_FILE" value="$(find bespoon)/bespoon.properties" />
     <env name="FILE_NAME" value="$(find bespoon)/bespoon.jar" />
     <node name="bespoon" pkg="bespoon" type="bespoon_pub.py" />
+    <node name="bespoon_marker" pkg="bespoon" type="bespoon_pub_marker.py" />
 </launch>
