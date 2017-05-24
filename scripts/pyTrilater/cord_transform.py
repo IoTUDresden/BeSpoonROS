@@ -64,20 +64,30 @@ def get_plane_angle(bCord, rCord):
     angle = math.degrees(math.acos(ab/abr)) 
     return angle
 
+
+# Ros axis in meter but bespoon axis in cm, 
+# 1m=100cm, unit_factor = 1/100 = 0.01 
+ros_axis_scale_factor = 0.01
+# currently, x-axis parallel, hence angle=0.0 
+bespoon_plane_angle_with_ros_plane = 0.0
+# bespoon plane's (0,0) coordinate in R plane, default [0,0]
+bespoon_center_in_ros_plane = [0,0]
+
+def get_ros_xy(point): 
+    if not isinstance(point, list) and len(list) < 2: 
+        raise Exception("Invalid coordinate, expected: [x,y]")
+    
+    rp = [ x * ros_axis_scale_factor for x in point]        
+    ros_xy = transform(rp, bespoon_plane_angle_with_ros_plane, bespoon_center_in_ros_plane)
+    return ros_xy 
+
 if __name__ == '__main__':
     p = [[20, 80], [450, 45], [300, 580]]
-    # p = [20,80]
-    # b = [0.391069, 2.99875]
-    # c = [ x/100.0  for x in p]    
     
-    # B's center in R's plane     
-    b = [-0.191069, 3.79875]    
-    angle = 0.0
-    b = [-0.41,3.19875]
+    # ToDo: update variable if needed 
+    bespoon_plane_angle_with_ros_plane = 0
+    bespoon_center_in_ros_plane = [0,0]
+
+    for x in p:
+         print x, get_ros_xy(x)      
     
-    
-    # 1m = 100cm, use same metric for both coordinates
-    pp = [ [ y/100.0 for y in x] for x in p]
-    for x in pp: print x, transform(x, angle, b)  
-    # print transform(c, angle, b)
-    pass
