@@ -40,8 +40,8 @@ def transform(point, angle_in_degree=None, point_origin_in_R=None):
     
     Rx = (point[0] - base[0]) * math.cos(angle)  + (point[1] - base[1]) * math.sin(angle)
     Ry =  -1 * (point[0] - base[0]) * math.sin(angle)  + (point[1] - base[1]) * math.cos(angle)
-    
-    return [Rx, Ry]
+    # z = 0     
+    return [Rx, Ry, 0]
 
 def get_angle(Bpoint, Rcenter=None):
     """
