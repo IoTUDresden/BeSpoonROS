@@ -9,15 +9,20 @@ from visualization_msgs.msg import MarkerArray
 
 from rosdata import RosData
 from tags_marker import BespoonMarker
+from pyTrilater import cord_transform as ct 
 
 class Bespoon(object):
-    def __init__(self):
-        rospy.init_node('bespoon_marker')
-        self.rate = rospy.Rate(10)    
+    def __init__(self):       
         self.bespoon_data=dict() 
         self.marker_data=dict() 
-        # 100cm = 1 m, ros axis in meter but besoon axis in cm 
-        self.ros_axis_factor=100.0
+
+    def ros_node_init(self, name='bespoon_marker'):
+        if name is None: 
+            raise Exception('topic and name could not be empty')
+        #  topic = visualization_marker_array, MarkerArray      
+        rospy.init_node(name)          
+        self.node_name=name
+        self.rate = rospy.Rate(10)           # 1Hz = 1 per second         
 
     """
     Format the bespoon topic data for marker visualization 
@@ -30,9 +35,10 @@ class Bespoon(object):
             for tag in ros_data.tags: 
                 # convert tag dict to rosdata             
                 t = RosData(json.dumps(tag))
-                local_marker_data[str(t.tagId)] = [ t.x/self.ros_axis_factor, t.y/self.ros_axis_factor, t.z/self.ros_axis_factor ]
+                # transform bespoon to ros coordinate 
+                local_marker_data[str(t.tagId)] =  ct.get_ros_xy([t.x, t.y, t.z])
             # anchor position list 
-            local_marker_data['anchor'] =  [ ros_data.anchorX / self.ros_axis_factor, ros_data.anchorY / self.ros_axis_factor ]
+            local_marker_data['anchor'] = ct.get_ros_xy([ ros_data.anchorX, ros_data.anchorY ]) 
         except Exception as e:
             print "Error: json data parsing error\n", e            
         # print marker_data
@@ -42,10 +48,9 @@ class Bespoon(object):
         """
         Subscriber data processing callback method 
         """
-        self.bespoon_data = msg.data 
-        # rospy.loginfo(msg)
-        self.marker_data= self.format_data_for_marker(msg.data)         
-        # ToDo: process data here 
+        self.bespoon_data = msg.data                 
+        self.marker_data= self.format_data_for_marker(msg.data)                 
+        # rospy.loginfo(self.marker_data)
         
     def subscribe(self):
         # subscribe and publish again the processed data 
@@ -71,9 +76,15 @@ class Bespoon(object):
 
 if __name__ == '__main__':    
     try:
-        b = Bespoon()                             
+        # transform constants 
+        ct.ros_axis_scale_factor = 0.01
+        ct.bespoon_plane_angle_with_ros_plane = 0.0
+        ct.bespoon_center_in_ros_plane = [0, 0]
+
+        b = Bespoon()   
+        b.ros_node_init();                          
         b.subscribe()
-        b.publish()                
+        b.publish()               
     except Exception as e:
         print("Error:" , e)
         print traceback.print_exc()
