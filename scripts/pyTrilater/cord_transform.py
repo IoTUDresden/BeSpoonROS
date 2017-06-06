@@ -74,7 +74,7 @@ bespoon_plane_angle_with_ros_plane = 0.0
 bespoon_center_in_ros_plane = [0,0]
 
 def get_ros_xy(point): 
-    if not isinstance(point, list) and len(list) < 2: 
+    if not isinstance(point, list) and len(point) < 2: 
         raise Exception("Invalid coordinate, expected: [x,y]")
     
     rp = [ x * ros_axis_scale_factor for x in point]        
