@@ -64,15 +64,6 @@ def get_plane_angle(bCord, rCord):
     angle = math.degrees(math.acos(ab/abr)) 
     return angle
 
-
-# Ros axis in meter but bespoon axis in cm, 
-# 1m=100cm, unit_factor = 1/100 = 0.01 
-ros_axis_scale_factor = 0.01
-# currently, x-axis parallel, hence angle=0.0 
-bespoon_plane_angle_with_ros_plane = 0.0
-# bespoon plane's (0,0) coordinate in R plane, default [0,0]
-bespoon_center_in_ros_plane = [0,0]
-
 def get_ros_xy(point): 
     if not isinstance(point, list) and len(point) < 2: 
         raise Exception("Invalid coordinate, expected: [x,y]")
@@ -81,13 +72,62 @@ def get_ros_xy(point):
     ros_xy = transform(rp, bespoon_plane_angle_with_ros_plane, bespoon_center_in_ros_plane)
     return ros_xy 
 
+def get_my_custom_xy_from_rxy(ros_coord, scale_factor=None):
+    """
+    Get my_custom xy coordinate from original ros xy coordinate, based on scale factor, angle and ros-center 
+    """
+    if not isinstance(ros_coord, list) and len(ros_coord) < 2: 
+        raise Exception("Invalid coordinate, expected: [x,y]")    
+
+    if scale_factor is None: 
+        scale_factor = ros_axis_scale_factor
+    elif isinstance(scale_factor, (int, float)) is not True: 
+        raise Exception('Invalid scale_factor, expected: int or float')
+
+    cp = [ x / float(scale_factor) for x in ros_coord]   
+    # plane angle and center remain constant 
+    my_xy = transform(cp, bespoon_plane_angle_with_ros_plane, bespoon_center_in_ros_plane)
+    return my_xy
+
+def get_ros_xy_from_custom_xy(my_coord, scale_factor=None):
+    """
+    Get ros xy from my_custom xy coordinate based on scale factor, angle and ros-center 
+    """
+    if not isinstance(my_coord, list) and len(my_coord) < 2: 
+        raise Exception("Invalid coordinate, expected: [x,y]")    
+
+    if scale_factor is None: 
+        scale_factor = ros_axis_scale_factor
+    elif isinstance(scale_factor, (int, float)) is not True: 
+        raise Exception('Invalid scale_factor, expected: int or float')
+
+    rp = [ x * float(scale_factor) for x in my_coord]   
+    # plane angle and center remain constant 
+    ros_xy = transform(rp, bespoon_plane_angle_with_ros_plane, bespoon_center_in_ros_plane)
+    return ros_xy
+
+# Ros axis in meter but bespoon axis in cm, 
+# 1m=100cm, unit_factor = 1/100 = 0.01 
+ros_axis_scale_factor = 0.01
+# currently, x-axis parallel, hence angle=0.0 
+bespoon_plane_angle_with_ros_plane = 0.0
+# bespoon plane's (0,0) coordinate in R plane, default [0,0]
+bespoon_center_in_ros_plane = [0,0]
+# My custom XY grid scale factor 
+# 1 unit = 20 cm; conversion factor = 20cm/1m = 20cm/100cm = 0.20
+custom_xy_scale = 0.20 
+
 if __name__ == '__main__':
     p = [[20, 80], [450, 45], [300, 580]]
     
     # ToDo: update variable if needed 
     bespoon_plane_angle_with_ros_plane = 0
     bespoon_center_in_ros_plane = [0,0]
+    # ros_axis_scale_factor = 0.20 
 
     for x in p:
-         print x, get_ros_xy(x)      
+        rxy = get_ros_xy(x)      
+        cxy = get_my_custom_xy_from_rxy(rxy, 0.20)
+        rr = get_ros_xy_from_custom_xy(cxy, 0.20)
+        print x, rxy, cxy, cmp(rxy, rr) == 0
     
