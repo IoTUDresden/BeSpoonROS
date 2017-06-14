@@ -77,9 +77,9 @@ class Bespoon(object):
 if __name__ == '__main__':    
     try:
         # transform constants 
-        ct.ros_axis_scale_factor = 0.01
-        ct.bespoon_plane_angle_with_ros_plane = 0.0
-        ct.bespoon_center_in_ros_plane = [0, 0]
+        # ct.ros_axis_scale_factor = 0.01
+        # ct.bespoon_plane_angle_with_ros_plane = 0.0
+        # ct.bespoon_center_in_ros_plane = [0, 0]
 
         b = Bespoon()   
         b.ros_node_init();                          
