@@ -5,47 +5,64 @@ import traceback
 from std_msgs.msg import String 
 from geometry_msgs.msg import PoseStamped, Pose
 from bespoon_pub_marker import Bespoon 
+from rosdata import RosData 
+from pyTrilater import cord_transform as ct 
 
 class Turtle(object):
 
     __bsp = Bespoon()
 
-    def __init__(self):
-        rospy.init_node('turtle_location_1', anonymous=True)
-        self.bespoon_data=None
+    def __init__(self):        
         self.ros_data=None
-        self.location=dict()        
-        pass 
-    
-    def callback(self, data):
-        global bsp
+        self.bespoon_data=None        
+        self.rxy = list()       # turtle current position from map 
+        self.bxy = list()       # anchor current position from bespoon
+                    
+    def callback(self, data):        
         #rospy.loginfo(rospy.get_caller_id() + 'Data=%s', data)
+
         if isinstance(data, Pose): 
-            # ROS position              
+            # turtle ros position data
             self.ros_data = data      
-            ros_xyz = [data.position.x, data.position.y, data.position.z]        
-            self.location['ros'] = ros_xyz
+            self.rxy = [data.position.x, data.position.y, data.position.z]                    
         else: 
-            # Bespoon data             
+            # anchor position data 
             self.bespoon_data = self.__bsp.format_data_for_marker(data.data)
             if self.bespoon_data.has_key('anchor'):  
-                self.location['anchor'] = self.bespoon_data.get('anchor')
-        # write to ros log             
-        rospy.loginfo(self.location)
+                self.bxy = self.bespoon_data.get('anchor')             
+        # rospy.loginfo()
+        # publish all data again 
+        self.publish()
 
-    def subscribe(self):        
+    def subscribe_ros_position(self):        
         rospy.Subscriber('tf_map_transform', Pose, self.callback)
-        rospy.spin()
+        # rospy.spin()
 
-    def subscribe2(self):        
-        rospy.Subscriber('bespoon', String, self.callback)        
+    def subscribe_anchor_position(self):        
+        rospy.Subscriber('bespoon', String, self.callback)
+        # rospy.spin()       
+
+    def position_publisher(self):
+        rospy.init_node('all_position_node', anonymous=True)
+        self.topic = rospy.Publisher('current_positions', String)  
+
+    def publish(self):
+        data = RosData()
+        data.turtle_ros_position = self.rxy 
+        data.anchor_ros_position = self.bxy 
+        data.turtle_custom_position = ct.get_my_custom_xy_from_rxy(self.rxy) if len(self.rxy) > 1 else list()
+        data.anchor_custom_position = ct.get_my_custom_xy_from_rxy(self.bxy) if len(self.bxy) > 1 else list()
+        # rospy.loginfo(data.toJson())        
+        self.topic.publish(data.toJson())
 
 if __name__ == '__main__':
     try:
-        print 'Starting turtle_location tracker'
+        print 'Starting turtlebot position publisher'
         turtle = Turtle()
-        turtle.subscribe2()
-        turtle.subscribe()
+        turtle.position_publisher()
+        turtle.subscribe_ros_position()
+        turtle.subscribe_anchor_position()
+        rospy.spin()
     except Exception as e:
         print("Error: ", e)
         print traceback.print_exc()
