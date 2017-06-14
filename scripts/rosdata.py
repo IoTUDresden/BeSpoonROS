@@ -3,12 +3,12 @@
 import json
 
 class RosData(object):
-    def __init__(self, json_data):
-        if json is not None:
+    def __init__(self, json_data=None):
+        if json_data is not None:
             self.__dict__ = json.loads(json_data)
 
     def toJson(self):
-        return json.dumps(self, default=lambda o:o.__dict__, sort_keys=True, indent=4)
+        return json.dumps(self, default=lambda o:o.__dict__, sort_keys=True) #  indent=4
 
     def fromJson(self, json_data):
         self.__dict__ = json.loads(json_data)
