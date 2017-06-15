@@ -3,7 +3,8 @@
 import rospy
 from std_msgs.msg import String 
 from geometry_msgs.msg import Pose, Point, Quaternion, PoseStamped
-from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal, MoveBaseActionGoal
+# Navigation in Groovy-ROS is built in rosbuild, not catkin 
+# from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal, MoveBaseActionGoal
 from pyTrilater import cord_transform as ct 
 
 def publish():
