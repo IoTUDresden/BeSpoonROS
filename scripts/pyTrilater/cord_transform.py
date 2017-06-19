@@ -63,6 +63,19 @@ def get_plane_angle(bCord, rCord):
     abr = (math.sqrt( bCord[0]**2 + bCord[1]**2) * math.sqrt( rCord[0]**2 + rCord[1]**2))
     angle = math.degrees(math.acos(ab/abr)) 
     return angle
+    
+def get_euclidean_distance(p1, p2):
+    a = numpy.array(p1)
+    b = numpy.array(p2)
+    dist = numpy.linalg.norm(a-b)
+    return dist 
+
+def get_distance(p1=None, p2=None):
+    if p1 is None or p2 is None: return None 
+    if len(p1) < 3 or len(p2) < 3: return None 
+    
+    dist = math.sqrt(  pow((p1[0]-p2[0]),2) + pow((p1[1]-p2[1]),2) + pow((p1[2]-p2[2]),2) )
+    return dist    
 
 def get_ros_xy(point): 
     if not isinstance(point, list) and len(point) < 2: 
