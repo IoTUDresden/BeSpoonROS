@@ -50,8 +50,8 @@ class Turtle(object):
         data = RosData()
         data.turtle_ros_position = self.rxy 
         data.anchor_ros_position = self.bxy 
-        data.turtle_custom_position = ct.get_my_custom_xy_from_rxy(self.rxy) if len(self.rxy) > 1 else list()
-        data.anchor_custom_position = ct.get_my_custom_xy_from_rxy(self.bxy) if len(self.bxy) > 1 else list()
+        data.turtle_custom_position = ct.get_simple_xy_from_ros_xy(self.rxy) if len(self.rxy) > 1 else list()
+        data.anchor_custom_position = ct.get_simple_xy_from_ros_xy(self.bxy) if len(self.bxy) > 1 else list()
         # rospy.loginfo(data.toJson())        
         self.topic.publish(data.toJson())
 

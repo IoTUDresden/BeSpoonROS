@@ -40,7 +40,7 @@ def transform(point, angle_in_degree=None, point_origin_in_R=None):
     
     Rx = (point[0] - base[0]) * math.cos(angle)  + (point[1] - base[1]) * math.sin(angle)
     Ry =  -1 * (point[0] - base[0]) * math.sin(angle)  + (point[1] - base[1]) * math.cos(angle)
-    # z = 0     
+    # TODO z, z = 0     
     return [Rx, Ry, 0.0]
 
 def get_angle(Bpoint, Rcenter=None):
@@ -85,15 +85,15 @@ def get_ros_xy(point):
     ros_xy = transform(rp, bespoon_plane_angle_with_ros_plane, bespoon_center_in_ros_plane)
     return ros_xy 
 
-def get_my_custom_xy_from_rxy(ros_coord, scale_factor=None):
+def get_simple_xy_from_ros_xy(ros_coord, scale_factor=None):
     """
-    Get my_custom xy coordinate from original ros xy coordinate, based on scale factor, angle and ros-center 
+    Get simple xy coordinate from original ros xy coordinate, based on scale factor, angle and ros-center 
     """
     if not isinstance(ros_coord, list) and len(ros_coord) < 2: 
         raise Exception("Invalid coordinate, expected: [x,y]")    
 
     if scale_factor is None: 
-        scale_factor = custom_xy_scale_factor
+        scale_factor = simple_xy_scale_factor
     elif isinstance(scale_factor, (int, float)) is not True: 
         raise Exception('Invalid scale_factor, expected: int or float')
 
@@ -102,15 +102,15 @@ def get_my_custom_xy_from_rxy(ros_coord, scale_factor=None):
     my_xy = transform(cp, bespoon_plane_angle_with_ros_plane, bespoon_center_in_ros_plane)
     return my_xy
 
-def get_ros_xy_from_custom_xy(my_coord, scale_factor=None):
+def get_ros_xy_from_simple_xy(my_coord, scale_factor=None):
     """
-    Get ros xy from my_custom xy coordinate based on scale factor, angle and ros-center 
+    Get ros xy from simple xy coordinate based on scale factor, angle and ros-center 
     """
     if not isinstance(my_coord, list) and len(my_coord) < 2: 
         raise Exception("Invalid coordinate, expected: [x,y]")    
 
     if scale_factor is None: 
-        scale_factor = custom_xy_scale_factor
+        scale_factor = simple_xy_scale_factor
     elif isinstance(scale_factor, (int, float)) is not True: 
         raise Exception('Invalid scale_factor, expected: int or float')
 
@@ -126,9 +126,9 @@ ros_axis_scale_factor = 0.01
 bespoon_plane_angle_with_ros_plane = 0.0
 # bespoon plane's (0,0) coordinate in R plane, default [0,0]
 bespoon_center_in_ros_plane = [0,0]
-# My custom XY grid scale factor 
+# Simple XY grid scale factor 
 # 1 unit = 20 cm; conversion factor = 20cm/1m = 20cm/100cm = 0.20
-custom_xy_scale_factor = 0.20 
+simple_xy_scale_factor = 0.20 
 
 if __name__ == '__main__':
     p = [[20, 80], [450, 45], [300, 580]]
@@ -140,7 +140,6 @@ if __name__ == '__main__':
 
     for x in p:
         rxy = get_ros_xy(x)      
-        cxy = get_my_custom_xy_from_rxy(rxy)
-        rr = get_ros_xy_from_custom_xy(cxy)
-        print x, rxy, cxy, cmp(rxy, rr) == 0
-    
+        cxy = get_simple_xy_from_ros_xy(rxy)
+        rr = get_ros_xy_from_simple_xy(cxy)
+        print x, rxy, cxy, cmp(rxy, rr) 

@@ -10,7 +10,7 @@ from pyTrilater import cord_transform as ct
 def publish():
     global ros_send_simple_goal_topic 
     rospy.init_node('nav_goal_node', anonymous=True)    
-    topic = rospy.Publisher('custom_coord_nav_goal', Pose)    
+    topic = rospy.Publisher('simple_coord_nav_goal', Pose)    
     # ros_send_goal_topic = rospy.Publisher('move_base/goal', MoveBaseActionGoal) 
     ros_send_simple_goal_topic = rospy.Publisher('move_base_simple/goal', PoseStamped) 
     # while not rospy.is_shutdown():        
@@ -28,12 +28,12 @@ def callback(data):
 
 def subscribe():
     # rospy.init_node('nav_goal', anonymous=True)
-    rospy.Subscriber('custom_coord_nav_goal', Pose, callback)
+    rospy.Subscriber('simple_coord_nav_goal', Pose, callback)
     rospy.spin()
 
 def prepare_goal(pose):    
     # transform custom xy_coordinate to ros_coordinate
-    point = ct.get_ros_xy_from_custom_xy([pose.position.x, pose.position.y, pose.position.z])
+    point = ct.get_ros_xy_from_simple_xy([pose.position.x, pose.position.y, pose.position.z])
     # create pose stamped for simple goal 
     goal = PoseStamped()
     goal.header.frame_id = 'map'

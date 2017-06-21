@@ -17,11 +17,11 @@ def main():
             break 
         elif c == 1: 
             xy = list(read_xy())                         
-            cxy = ct.get_my_custom_xy_from_rxy(xy, sf)
+            cxy = ct.get_simple_xy_from_ros_xy(xy, sf)
             print cxy
         elif c == 2:
             xy = list(read_xy())
-            rxy = ct.get_ros_xy_from_custom_xy(xy, sf)
+            rxy = ct.get_ros_xy_from_simple_xy(xy, sf)
             print rxy
         
 
