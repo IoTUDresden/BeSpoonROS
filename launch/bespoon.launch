@@ -1,12 +1,12 @@
 <launch>
-    <!-- set the jar file name,   -->
+    <!-- set the jar file and property file name with location   -->
     <env name="BESPOON_PROP_FILE" value="$(find bespoon)/bespoon.properties" />
-    <env name="FILE_NAME" value="$(find bespoon)/bespoon.jar" />
+    <env name="BESPOON_JAR_FILE" value="$(find bespoon)/bespoon.jar" />
+
     <node name="bespoon" pkg="bespoon" type="bespoon_pub.py" />
     <node name="bespoon_marker" pkg="bespoon" type="bespoon_pub_marker.py" />
-    <!--<node name="custom_nav_send" pkg="bespoon" type="nav_service.py" />-->
-
-    <!-- custom navigation goal publisher, middleware of ROS and Custom XY  -->
-    <node name="custom_nav_goal" pkg="bespoon" type="nav_goal.py" />
-    <node name="show_all_positions" pkg="bespoon" type="turtle_location.py" />
+    
+    <!-- Simple navigation goal publisher, middleware of ROS and Simple XY  -->
+    <node name="simple_coord_nav_goal" pkg="bespoon" type="nav_goal.py" />
+    <node name="simple_position_node" pkg="bespoon" type="turtle_location.py" />
 </launch>
