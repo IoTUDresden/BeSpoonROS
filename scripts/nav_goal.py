@@ -45,8 +45,7 @@ def prepare_goal(pose):
 ros_send_simple_goal_topic = None 
 
 if __name__ == '__main__':
-    try:
-        # example: rostopic pub -1 custom_coord_nav_goal geometry_msgs/Pose '{position : { x: 0, y: 0, z: 0}, orientation: {x: 0, y: 0, z: 0, w: 0}}'
+    try:        
         publish()
         subscribe()
     except Exception as e:
