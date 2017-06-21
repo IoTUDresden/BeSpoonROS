@@ -48,7 +48,10 @@ class Turtle(object):
         simple_rxy = ct.get_simple_xy_from_ros_xy(self.rxy) if len(self.rxy) > 1 else [None, None, None]
         simple_bxy = ct.get_simple_xy_from_ros_xy(self.bxy) if len(self.bxy) > 1 else [None, None, None]
 
-        rpose = Pose( Point (simple_rxy[0], simple_rxy[1], simple_rxy[2]) , self.ros_data.orientation)
+        rpose = Pose()
+        
+        if self.ros_data is not None: 
+            rpose = Pose( Point (simple_rxy[0], simple_rxy[1], simple_rxy[2]) , self.ros_data.orientation)
         bpose = Pose( Point (simple_bxy[0], simple_bxy[1], simple_bxy[2]) , Quaternion(0,0,0,1))
 
         # publish pose information in simple coordinate 
