@@ -62,3 +62,9 @@ Add the location of `BeSpoonTracker.jar` and `bespoon.propteries` in launcher ([
 <env name="BESPOON_PROP_FILE" value="$(find bespoon)/bespoon.properties" />
 <env name="BESPOON_JAR_FILE" value="$(find bespoon)/bespoon.jar" />
 ```
+
+## Evaluate ROS and BeSpoon Simple location 
+
+```bash
+rosrun bespoon benchmark.py 
+```
